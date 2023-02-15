@@ -1,29 +1,23 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { Request, Response } from "express";
+import { LoginService } from '../services/login.service';
 
-//import { proccess } from 'dotenv';
+export const login = async (req: Request, res: Response) => {
+    try {
+        const { correo,contra } = req.body; //trae los datos del body
+        //Validacion datos de entrada
+        if (!correo || !contra) {
+        res.status(400).send({ message: 'Falta correo o contraseña' });
+        return;
+        }
+        // Verificar usuario y contraseña
+        const loginService = new LoginService();
+        const user = await loginService.login(correo, contra);
+        if (!user) return res.status(404).json({ message: "Usuario o contraseña son incorrectos" });
+        return res.json(user);
 
-
-export const login = async (pool, req, res) => {
-  console.log("hola mundo")
-  try {
-    const { email, password } = req.body;
-
-    //Consulta a la base de datos para obtener el usuario con ese email
-    const [user] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (!user) return res.status(404).send('El usuario no existe');
-    
-    //Comparar la contraseña encriptada con la que se envia
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(401).send('Contraseña incorrecta');
-
-    //Crear y asignar un token
-    const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(token);
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
-  }
-}
-
+    } catch (error) {
+        if (error instanceof Error) {
+        return res.status(500).json({ message: error.message });
+        }
+    }
+  };

@@ -1,38 +1,54 @@
-import { Entity, Column, BeforeInsert, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    BaseEntity,
+    CreateDateColumn,
+    UpdateDateColumn,
+    BeforeInsert,
+  } from "typeorm";
+  
+  @Entity()
+  export class User extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    idusuarios: number;
+  
+    @Column()
+    nombre: string;
+  
+    @Column()
+    correo: string;
 
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  iduser: number;
+    @Column()
+    contra: string;
 
-  @Column()
-  nombre: string;
+    @Column()
+    telefono: string;
 
-  @Column()
-  correo: string;
+    @Column()
+    direccion: string;
+  
+    @Column({ default: true })
+    active: boolean;
+  
+    @CreateDateColumn()
+    createdAt: Date;
+  
+    @UpdateDateColumn()
+    updatedAt: Date;
 
-  @Column()
-  contra: string;
+    @Column({default:null})
+    reset_token: string;
 
-  @Column()
-  telefono: string;
+    @Column({default:null})
+    reset_token_expiry: number;
+    static idusuarios: any;
+    static correo: any;
 
-  @Column()
-  direccion: string;
-
-  @Column()
-  active: boolean;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatesAt: Date;
-
-  @BeforeInsert()
-  async hashPassword() {
-    this.contra = await bcrypt.hash(this.contra, 10);
+    @BeforeInsert()
+    async hashPassword() {
+      this.contra = await bcrypt.hash(this.contra, 10);
+    }
+    
   }
-
-}

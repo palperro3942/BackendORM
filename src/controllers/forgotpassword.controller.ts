@@ -1,17 +1,18 @@
-import bcrypt from 'bcrypt';
+import { Request, Response } from "express";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import { User } from '../entities/user.entity';
 
-export const forgotPassword = async (pool, req, res) => {
+export const forgotPassword = async (req: Request, res:Response) => {
   try {
-    const { email } = req.body;
+    const { correo } = req.body;
     //Comprobar si el usuario existe
-    const [user] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await User.findOneBy({ correo: correo });
     if (!user) return res.status(400).send('Usuario no existe');
     //Crear un token de restablecimiento de contraseña
     const resetToken = crypto.randomBytes(20).toString('hex');
     const resetTokenExpiry = Date.now() + 3600000; //1 hora
-    await pool.query('UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?', [resetToken, resetTokenExpiry, email]);
+    await User.update({reset_token:resetToken , reset_token_expiry: resetTokenExpiry}, req.body);
     //Enviar el correo electrónico con el token
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -22,7 +23,7 @@ export const forgotPassword = async (pool, req, res) => {
     });
     const mailOptions = {
       from: process.env.EMAIL,
-      to: email,
+      to: correo,
       subject: 'BaboMart: Link de restablecimiento de contraseña',
         text:
           'Haga clic en el siguiente enlace para restablecer su contraseña: \n\n' +
@@ -31,9 +32,10 @@ export const forgotPassword = async (pool, req, res) => {
       };
       await transporter.sendMail(mailOptions);
       res.status(200).send('Se ha enviado un correo electrónico para restablecer su contraseña');
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Error en el servidor');
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+          }
     }
   };
   

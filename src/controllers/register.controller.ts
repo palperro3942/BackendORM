@@ -1,25 +1,36 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { Request, Response } from "express";
+import { RegisterService } from '../services/register.service';
 
-export const register = async (pool, req, res) => {
-  try {
-    const { email, password, name } = req.body;
-    //Comprobar si el usuario ya existe
-    const [existingUser] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (existingUser) return res.status(400).send('Usuario ya existe');
-    //Encriptar la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    //Crear el usuario
-    const newUser = await pool.query(
-      'INSERT INTO users (email, password, name) VALUES (?, ?, ?)',
-      [email, hashedPassword, name]
-    );
-    //Crear y asignar el token
-    const token = jwt.sign({ id: newUser.insertId }, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(token);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+interface UserBody {
+    nombre: string;
+    correo: string;
+    contra: string;
+    telefono: string;
+    direccion: string;
   }
+
+export const register = async (req: Request, res: Response) => {
+    try {
+        const { nombre, correo, contra, telefono, direccion } = req.body;
+        //Validacion datos de entrada
+        if (!nombre || !correo || !contra || !telefono || !direccion) {
+            res.status(400).send({ message: 'Datos incompletos porfavor verifique que ha llenado todos los datos' });
+            return;
+        }
+        //instanciamos nuestro servicio
+        const registerService = new RegisterService();
+        //comprobamos si ya existe el correo si no pasamos al sig
+        const existingUser = await registerService.isExistingUser(correo);
+        if (existingUser) {
+            return res.status(404).json({ message: "Usuario ya existe con ese correo" });
+        }
+        //ejecuta el registro
+        const user = registerService.executeRegister(nombre,correo,contra,telefono,direccion)
+        return res.json(user);
+        
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
 };
