@@ -1,4 +1,5 @@
-import {User} from '../entities/user.entity';
+import {User} from '../entities/User.entity';
+import { comparePassword } from "../utils/user.utils";
 
 export class LoginService {
     async login(correo: string, contra: string) {   
@@ -9,7 +10,11 @@ export class LoginService {
         if (user && user.contra === contra) {
             return user;
         }
-
+        //if(await comparePassword(contra,user.contra))
+        /*
+        if (user && await comparePassword(contra,user.contra)) {
+            return user;
+        }*/
         // Si no se encontró al usuario o la contraseña es incorrecta, se retorna null
         return null;
     }

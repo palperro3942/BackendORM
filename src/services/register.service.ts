@@ -1,4 +1,4 @@
-import { User } from '../entities/user.entity';
+import { User } from '../entities/User.entity';
 import { hashSync } from 'bcrypt';
 import { createJWT } from '../utils/user.utils';
 
