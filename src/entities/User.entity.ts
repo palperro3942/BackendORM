@@ -45,10 +45,5 @@ import {
     reset_token_expiry: number;
     static idusuarios: any;
     static correo: any;
-
-    @BeforeInsert()
-    async hashPassword() {
-      this.contra = await bcrypt.hash(this.contra, 10);
-    }
     
   }
