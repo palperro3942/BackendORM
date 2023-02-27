@@ -1,6 +1,5 @@
-import { User } from '../entities/User.entity';
-import { hashSync } from 'bcrypt';
-import { createJWT } from '../utils/user.utils';
+import { User } from '../entities/user.entity';
+import { hashPassword, createJWT } from '../utils/user.utils';
 
 export class RegisterService {
   async isExistingUser(correo: string): Promise<boolean> {
@@ -10,34 +9,29 @@ export class RegisterService {
   }
 
   async executeRegister(nombre:string, correo: string, contra: string, telefono:string, direccion:string) {
-    const user = new User();
-    user.nombre = nombre;
-    user.correo = correo;
-    user.contra = contra;
-    user.telefono = telefono;
-    user.direccion = direccion;
-
     // Verificar si el correo ya existe
     const userExist = await User.findOneBy({ correo: correo });
     if (userExist) {
       throw new Error('El correo electrónico ya existe');
     }
 
+    // Encriptar la contraseña
+    const hashedPassword = await hashPassword(contra);
+
     // Crear nuevo usuario
-    const newuser = await User.create({
-      nombre,
-      correo,
-      contra: hashSync(contra, 10),
-      telefono,
-      direccion,
-    });
+    const newUser = new User();
+    newUser.nombre = nombre;
+    newUser.correo = correo;
+    newUser.contra = hashedPassword;
+    newUser.telefono = telefono;
+    newUser.direccion = direccion;
 
     // Guardar usuario en la base de datos
-    await User.save(newuser);
+    await User.save(newUser);
 
     // Generar token de autenticación
-    const token = createJWT(User.idusuarios, User.correo);
+    const token = createJWT(newUser.idusuarios, newUser.correo);
 
-    return { newuser, token };
+    return { newUser, token };
   }
 }
