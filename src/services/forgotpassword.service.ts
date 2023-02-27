@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import { User } from '../entities/User.entity';
+import { User } from '../entities/user.entity';
 
 export class ForgotPasswordService {
   async sendPasswordResetEmail(correo: string) {
@@ -26,7 +26,7 @@ export class ForgotPasswordService {
     const mailOptions = {
       from: process.env.EMAIL,
       to: correo,
-      subject: 'BaboMart: Link de restablecimiento de contraseña',
+      subject: 'reprobados.com: Link de restablecimiento de contraseña',
       text:
         'Haga clic en el siguiente enlace para restablecer su contraseña: \n\n' +
         `http://localhost:3000/resetpassword/${resetToken} \n\n` +
