@@ -13,7 +13,7 @@ export class ForgotPasswordService {
 
     // Crear un token de restablecimiento de contraseña
     const resetToken = crypto.randomBytes(20).toString('hex');
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hora
+    const resetTokenExpiry = new Date(Date.now() + (60 * 60 * 1000)); // 1 hora en milisegundos
     await updatePasswordResetToken(user.correo, resetToken, resetTokenExpiry);
 
     // Enviar el correo electrónico con el token
