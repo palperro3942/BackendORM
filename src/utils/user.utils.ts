@@ -1,3 +1,4 @@
+import { User } from "../entities/user.entity";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { config } from "dotenv";
@@ -20,3 +21,9 @@ export const createJWT = (id: number, correo: string) => {
         expiresIn: process.env.JWT_EXPIRES_IN||'1h',
     });
 };
+
+//Funcion generar token para restablecer contra
+export const updatePasswordResetToken = async (correo: string, resetToken: string, resetTokenExpiry: number) => {
+  await User.update({ correo }, { reset_token: resetToken, reset_token_expiry: resetTokenExpiry });
+};
+
