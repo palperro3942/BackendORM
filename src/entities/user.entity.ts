@@ -40,7 +40,7 @@ import {
     reset_token: string;
 
     @Column({default:null})
-    reset_token_expiry: number;
+    reset_token_expiry: Date;
     static idusuarios: any;
     static correo: any;
     
