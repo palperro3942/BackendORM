@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import { User } from '../entities/user.entity';
+import { updatePasswordResetToken } from '../utils/user.utils';
 
 export class ForgotPasswordService {
   async sendPasswordResetEmail(correo: string) {
@@ -13,7 +14,7 @@ export class ForgotPasswordService {
     // Crear un token de restablecimiento de contraseña
     const resetToken = crypto.randomBytes(20).toString('hex');
     const resetTokenExpiry = Date.now() + 3600000; // 1 hora
-    await User.update({ reset_token: resetToken, reset_token_expiry: resetTokenExpiry }, { correo });
+    await updatePasswordResetToken(user.correo, resetToken, resetTokenExpiry);
 
     // Enviar el correo electrónico con el token
     const transporter = nodemailer.createTransport({
