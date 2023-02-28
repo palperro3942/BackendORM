@@ -23,7 +23,7 @@ export const createJWT = (id: number, correo: string) => {
 };
 
 //Funcion generar token para restablecer contra
-export const updatePasswordResetToken = async (correo: string, resetToken: string, resetTokenExpiry: number) => {
+export const updatePasswordResetToken = async (correo: string, resetToken: string, resetTokenExpiry: Date) => {
   await User.update({ correo }, { reset_token: resetToken, reset_token_expiry: resetTokenExpiry });
 };
 
