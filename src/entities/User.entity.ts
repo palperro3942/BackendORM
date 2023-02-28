@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
     Entity,
     Column,
@@ -6,7 +5,6 @@ import {
     BaseEntity,
     CreateDateColumn,
     UpdateDateColumn,
-    BeforeInsert,
   } from "typeorm";
   
   @Entity()
