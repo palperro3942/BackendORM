@@ -27,3 +27,7 @@ export const updatePasswordResetToken = async (correo: string, resetToken: strin
   await User.update({ correo }, { reset_token: resetToken, reset_token_expiry: resetTokenExpiry });
 };
 
+//Funcion para borrar el resetToken
+export const clearResetToken = async (idusuario: number): Promise<void> => {
+  await User.update({ idusuarios: idusuario }, { reset_token: "", reset_token_expiry: new Date(Date.now()) });
+};
