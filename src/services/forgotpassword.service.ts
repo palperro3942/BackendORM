@@ -1,7 +1,6 @@
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
 import { User } from '../entities/user.entity';
-import { updatePasswordResetToken } from '../utils/user.utils';
+import { updatePasswordResetToken, sendMail  } from '../utils/user.utils';
 
 export class ForgotPasswordService {
   async sendPasswordResetEmail(correo: string) {
@@ -17,14 +16,6 @@ export class ForgotPasswordService {
     await updatePasswordResetToken(user.correo, resetToken, resetTokenExpiry);
 
     // Enviar el correo electrónico con el token
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
     const mailOptions = {
       from: process.env.EMAIL,
       to: correo,
@@ -34,6 +25,6 @@ export class ForgotPasswordService {
         `http://localhost:3000/resetpassword/${resetToken} \n\n` +
         'Si no solicitó restablecer su contraseña, ignore este correo electrónico.',
     };
-    await transporter.sendMail(mailOptions);
+    await sendMail(mailOptions);
   }
 }
