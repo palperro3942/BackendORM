@@ -1,8 +1,9 @@
 import { User } from '../entities/user.entity';
-import { comparePassword, hashPassword } from "../utils/user.utils";
+import { comparePassword } from "../utils/user.utils";
 
 export class LoginService {
   async login(correo: string, contra: string) {
+
     // Busca al usuario en la base de datos
     const user = await User.findOneBy({ correo });
 
