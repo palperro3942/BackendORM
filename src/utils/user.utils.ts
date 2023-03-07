@@ -1,7 +1,7 @@
 import { User } from "../entities/user.entity";
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import nodemailer from "nodemailer";
 import { config } from "dotenv";
 config();
 
@@ -33,22 +33,11 @@ export const clearResetToken = async (idusuario: number): Promise<void> => {
   await User.update({ idusuarios: idusuario }, { reset_token: "", reset_token_expiry: new Date(Date.now()) });
 };
 
-//Funcion para enviar correos
-export const sendMail = async (mailOptions: any): Promise<void> => {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  await transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response); //debug
-    }
-  });
+//Funcion para CrearConfirmacionHash
+export const confirmationHash = (data: Date): string => {
+  const secret = process.env.HASH_SECRET || 'secret';
+  const hash = crypto.createHmac('sha256', secret)
+    .update(JSON.stringify(data))
+    .digest('hex');
+  return hash;
 };

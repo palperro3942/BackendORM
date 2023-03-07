@@ -27,7 +27,7 @@ import {
     @Column()
     direccion: string;
   
-    @Column({ default: true })
+    @Column({ default: false })
     active: boolean;
   
     @CreateDateColumn()
@@ -35,6 +35,9 @@ import {
   
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @Column({nullable: true})
+    confirmationHash: string;
 
     @Column({default:null})
     reset_token: string;

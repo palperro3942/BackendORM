@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { User } from '../entities/user.entity';
-import { updatePasswordResetToken, sendMail  } from '../utils/user.utils';
+import { updatePasswordResetToken } from '../utils/user.utils';
+import { sendMail } from "../utils/email.utils";
 
 export class ForgotPasswordService {
   async sendPasswordResetEmail(correo: string) {
@@ -22,7 +23,7 @@ export class ForgotPasswordService {
       subject: 'reprobados.com: Link de restablecimiento de contraseña',
       text:
         'Haga clic en el siguiente enlace para restablecer su contraseña: \n\n' +
-        `http://localhost:3000/resetpassword/${resetToken} \n\n` +
+        `http://reprobados.com:3000/resetpassword/${resetToken} \n\n` +
         'Si no solicitó restablecer su contraseña, ignore este correo electrónico.',
     };
     await sendMail(mailOptions);
