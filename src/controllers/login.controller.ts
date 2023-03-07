@@ -13,6 +13,8 @@ export const login = async (req: Request, res: Response) => {
         const loginService = new LoginService();
         const user = await loginService.login(correo, contra);
         if (!user) return res.status(404).json({ message: "Usuario o contraseña son incorrectos" });
+        // Verificar si el usuario esta activo
+        if (!user.active) return res.status(404).json({ message: "Usuario no esta activo" });
         return res.json(user);
 
     } catch (error) {
